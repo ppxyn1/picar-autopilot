@@ -1,104 +1,57 @@
-# autopilot
 
-Template code for the AutoPilot self-driving software on the PiCar. 
+# Picar-autopilot
+---
 
-![alt text](https://github.com/adammoss/autopilot/blob/main/test.png?raw=true)
+## Video Links
+[Short Video Page](https://youtube.com/shorts/faxs8olFlaE?feature=share)
 
-## Installation
 
-Set up a virtual environment using Anaconda (here we have used python 3.8, we recommend 3.7+)
+## Overview
+The Picar project is a project to develop artificial intelligence models for self-driving cars. This project analyzes a given dataset, uses it to predict whether a vehicle is driving and its direction, and verifies the model's performance through real-world driving tests and heatmaps. This document includes an overall description of the project, how it is executed, and the test results.
 
-```
-conda create -n autopilot python=3.8
-```
+Autopilot and PiCar are provided by the UoN-MLiS team. Template code for the [autopilot](https://github.com/adammoss/autopilot) self-driving software on the PiCar.
 
-Activate the environment and install the requirements
 
-```
-conda activate autopilot
-pip install -r requirements.txt
-```
+## Project Plan
 
-## Testing
+The central concept behind the auto driving technology is to use trained object detection models to make principled decisions about what manoeuvres a car should make. In this project task is to collect a data set of images and use them to train a machine learning algorithm to autonomously navigate around a realistic test circuit, and make the appropriate manoeuvres where necessary.
 
-In test mode AutoPilot will use a supplied test image, rather than live images from the car. This image has exactly the same dimensions as live images.
+The first part of the project requires maximum performance from Kaggle challenge. The challenge consists of 13.8k images, along with the target car response (speed and steering angle). It allows you to automate the process of model submission, and obtain an indication of performance (using a small set of test data) before evaluate them on the final, unseen data. 
 
-We have included a base model to show how to interface with your code. To test using this model
+The second part of the project calls for actual driving on three tracks with various variables. We evaluate driving performance in a real environment by applying the learned model to a physical vehicle. Driving tests are conducted by collecting the vehicle's sensor data in real time, and controlling the vehicle to follow the driving path predicted by the model.
 
-```
-python3 run.py --model base
-```
 
-You should get an angle of 88 and a speed of 35, with an inference time of around 30 milliseconds (depending on hardware).
+<p align="center">
+<img src="/assets/track.jpg" width="70%" height="60%" />
+</p>
 
-Other available models are 
+The process requires a variety of hardware equipment, such as raspberry pie and cameras, and the accuracy and stability of the model can be checked in real-world driving environments.
 
-```
-python3 run.py --model maggie
-```
 
-and a model converted to tflite
 
-```
-python3 run.py --model maggie_tpu
-```
+## Methods
+##### Network Architecture
+<p align="center">
+<img src="/assets/network.png" width="90%" height="60%" />
+</p>
 
-## Modifying
+##### Heat map output
 
-1. Create another directory in the models directory, with the directory name the same as your group name (no spaces please, use an underscore). 
+###### How to generate a heat map
+We use a heatmap.ipynb script to visualize the results of the learned model, which generates a heatmap relative to the actual location based on the location of the obstacle when driving.
 
-2. Create a file called model.py in this directory. Your model.py file can contain anything you like (use pytorch or jax if you want to!), the only restriction is it *must* define a Model class with a predict method, which takes an image as input and outputs the speed and angle (in 'car' units). 
+<p align="center">
+  <img src="/assets/heatmap1.png" alt="Image 1" width="45%" />
+  <img src="/assets/heatmap2.png" alt="Image 2" width="45%" />
+</p>
+<p align="center">
+  <em>The left-hand side figure illustrates before applying the Attention model, and the right-hand side figure represents after applying the Attention model.</em>
+</p>
 
-3. You can use models/base/model.py as a guide. Remember to change any image preprocessing to match what you did in training.
 
- If you use additional packages, please edit the 'requirements.txt' file so we can install them. 
+---
+Installation and Testing code can find from the template code for the [autopilot](https://github.com/adammoss/autopilot) self-driving software on the PiCar.
 
-To test using your model
+---
 
-```
-python3 run.py --model name_of_your_model
-```
-
-The code will raise an error if you get unrealistic values for the speed and angle. Please also ensure your inference time is reasonable.
-
-## Running 
-
-To run on the car you will need to transfer your model to the car and run using python3 (note the drive mode option)
-
-```
-python3 run.py --model name_of_your_model --mode drive --duration 60
-```
-
-There may be a conflict with the camera already running with the remote control inferface. In this case find the process(es) of the webserver
-
-```
-ps aux | grep runserver
-```
-
-Then look for any process IDs (second number). Next kill these by 
-
-```
-kill process_id
-```
-
-for any process IDs (there are normally 2 running). You should now be able to run autopilot.
-
-Note that to use remote control you will need to restart the car. 
-
-If invoking the edge-TPU and you encounter something like:
-
-```
-libedgetpu.1.dylib' (open() failed with errno=13)
-```
-
-This means there is a failed connection with the eTPU. Make sure the the eTPU is plugged in and the light on
-
-## Inference time issues
-
-If you are expering long inference times on the car, you should try to reduce your model complexity or reduce the size of images processed by your model. If you still have issues, you can run the car at a reduced speed by setting the max_speed argument, for example
-
-```
-python3 run.py --model name_of_your_model --mode drive --duration 60 --max_speed 30
-```
-
-Pratically, we have found this needs to be > 25 in order for the car to still move. Please note that running at a reduced speed will mean it fails one of the challenges, which is to drive round the oval track at a speed of 50. 
+*For more details, please refer to the MLiS report. The report is available only to a limited number of people who requested to check it as a reference*
